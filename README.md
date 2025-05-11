@@ -46,7 +46,7 @@ We aim to answer this using statistical and machine learning techniques while su
 2. **Outlier Handling**  
    - Applied a 99th percentile cap  
    - Created a log-transformed feature:  
-     $\text{gamerounds\_log} = \log(1 + \text{capped\_rounds})$
+    `gamerounds_log = log(1 + capped_rounds)`
 
 3. **Hypothesis Testing: Chi-Squared**  
    - $H_0$: No difference in retention between groups  
