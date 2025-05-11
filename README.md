@@ -8,12 +8,16 @@ Using a real A/B test dataset with over 90,000 players, we explore this question
 
 ## Dataset Overview
 
-The dataset includes anonymized data for 90,189 players randomly split into two groups:
+The dataset used in this project is publicly available on Kaggle:
+
+**[Mobile Games A/B Testing - Cookie Cats Dataset](https://www.kaggle.com/datasets/mursideyarkin/mobile-games-ab-testing-cookie-cats/data)**
+
+It includes anonymized data for 90,189 players randomly split into two groups:
 
 - `gate_30`: Players encountered the gate at level 30  
 - `gate_40`: Players encountered the gate at level 40
 
-For each player, the following fields are provided:
+Each record contains the following fields:
 
 - `userid`: Unique identifier  
 - `version`: A/B test group (`gate_30` or `gate_40`)  
@@ -36,71 +40,62 @@ We aim to answer this using statistical and machine learning techniques while su
 ## Analysis Structure
 
 1. **Exploratory Data Analysis (EDA)**  
-   - Visual inspection of group balance  
-   - Distribution of rounds played  
-   - Outlier detection with boxplots and histograms  
+   - Group balance and retention comparison  
+   - Round distribution and outlier detection  
 
 2. **Outlier Handling**  
-   - Capped the 99th percentile to reduce skew  
-   - Applied log transformation:
-
-     $$
-     \text{gamerounds\_log} = \log(1 + \text{capped\_rounds})
-     $$
+   - Applied a 99th percentile cap  
+   - Created a log-transformed feature:  
+     $\text{gamerounds\_log} = \log(1 + \text{capped\_rounds})$
 
 3. **Hypothesis Testing: Chi-Squared**  
-   - Compared Day 1 and Day 7 retention rates between groups  
-   - Null hypothesis: $H_0$: No difference in retention between groups  
-   - Alternative hypothesis: $H_1$: There is a difference  
-   - Day 7 results showed statistical significance ($p = 0.0016$)
+   - $H_0$: No difference in retention between groups  
+   - $H_1$: A difference exists  
+   - Day 7 p-value: $p = 0.0016$ (statistically significant)
 
 4. **Bootstrapping**  
-   - Simulated thousands of retention rate samples  
-   - Constructed 95% confidence intervals  
-   - Used to validate findings from Chi-Squared test
+   - Created empirical confidence intervals for retention rates  
+   - Confirmed statistical findings through simulation
 
 5. **Predictive Modeling: Logistic Regression**  
-   - Modeled likelihood of Day 7 return using:
-     - Day 1 retention
-     - Number of rounds played (log)
-     - Test group assignment  
-   - Evaluated with precision, recall, and F1-score  
-   - Extracted and visualized feature importance
-
-   The model predicts the probability of Day 7 retention using the logistic function:
-
-   $$
-   P(y = 1 \mid \mathbf{x}) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_n x_n)}}
-   $$
+   - Features: `retention_1`, `gamerounds_log`, `version_bin`  
+   - Target: `retention_7`  
+   - Model:  
+     $P(y = 1 \mid \mathbf{x}) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_n x_n)}}$  
+   - Evaluation: Precision, recall, F1-score  
+   - Feature importance visualized
 
 ---
 
 ## Key Results
 
-- Day 1 retention difference was **not** statistically significant ($p = 0.0755$)  
-- Day 7 retention was **significantly higher** in the `gate_30` group ($p = 0.0016$)  
-- Players who returned on Day 1 or played more rounds were more likely to stay engaged  
-- Being in the `gate_40` group slightly decreased long-term retention
+- Day 1 retention: no statistically significant difference ($p = 0.0755$)  
+- Day 7 retention: significantly higher in `gate_30` group ($p = 0.0016$)  
+- Early engagement (Day 1 return and game rounds) strongly predicts long-term retention  
+- `gate_40` assignment slightly reduced retention probability
 
 ---
 
 ## Recommendation
 
-**Retain the gate at level 30**, or consider placing it even earlier. The data shows that players in this group are more likely to remain engaged after 7 days.
+**Keep the gate at level 30** — or consider testing even earlier placements.
 
-This insight allows game designers to make informed decisions about progression pacing without negatively affecting short-term behavior.
+Players shown the gate earlier tend to return more reliably after 7 days, without harming short-term engagement. This supports a game design strategy that optimizes long-term retention through carefully timed progression blocks.
 
 ---
 
 ## Tools Used
 
 - Python (pandas, NumPy, seaborn, matplotlib, scikit-learn, scipy)
-- Logistic regression for classification
+- Logistic regression
 - Bootstrap resampling
-- Markdown and LaTeX for documentation clarity
+- Inline LaTeX for documentation
 
 ---
 
-## License & Disclaimer
+## License & Dataset Credit
 
-This project is for educational and non-commercial purposes. All rights to game assets and data belong to the original creators of Cookie Cats.
+Dataset by **Mürşide Yarkın**, hosted on Kaggle:  
+[https://www.kaggle.com/datasets/mursideyarkin/mobile-games-ab-testing-cookie-cats](https://www.kaggle.com/datasets/mursideyarkin/mobile-games-ab-testing-cookie-cats)
+
+This project is for educational purposes. All game content is owned by the original developers of Cookie Cats.
